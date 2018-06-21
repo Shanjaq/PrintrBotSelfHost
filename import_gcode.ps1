@@ -77,17 +77,19 @@ function Convert-GCode ($fileName)
 
 	Get-Content $fileName | ForEach-Object {
 		#replacements
-		$blah = ($_ -replace "^M104\s+S([0-9]+)", "M100 ({he1st:`$1}); Was: $&")
-		$blah = ($blah -replace "^M109\s+S([0-9]+)","M100 ({he1st:`$1}); Was: $&`r`nM101 ({he1at:t}); wait for At Temp")
-		$blah = ($blah -replace "M107","M100 ({out4:0}); Was: M107")
-		$blah = ($blah -replace "^M140\s+S([0-9]+)","M100 ({he3st:`$1}); Was: $&")
-		$blah = ($blah -replace "^M106\s+S([0-9]+)","M100 ({out4:1.000}); Was: $&")
-		$blah = ($blah -replace [regex]::escape("\\"),"\")
-		$blah = ($blah -replace "E(?=-?[0-9]+\.?[0-9]*$)","A")
+		$gcode_line = ($_ -replace "^M104\s+S([0-9]+)", "M100 ({he1st:`$1}); Was: $&")
+		$gcode_line = ($gcode_line -replace "^M109\s+S([0-9]+)","M100 ({he1st:`$1}); Was: $&`r`nM101 ({he1at:t}); wait for At Temp")
+		$gcode_line = ($gcode_line -replace "M107","M100 ({out4:0}); Was: M107")
+		$gcode_line = ($gcode_line -replace "^M140\s+S([0-9]+)","M100 ({he3st:`$1}); Was: $&")
+		$gcode_line = ($gcode_line -replace "^M106\s+S([0-9]+)","M100 ({out4:1.000}); Was: $&")
+		$gcode_line = ($gcode_line -replace [regex]::escape("\\"),"\")
+		$gcode_line = ($gcode_line -replace "E(?=-?[0-9]+\.?[0-9]*$)","A")
+		$gcode_line = "$($gcode_line)`r`n"
 		$line_count++
-		$ostream.Write(([byte[]][char[]]("$($blah)`r`n")), 0, ($blah.Length+2))
+		$ostream.Write(([byte[]][char[]]($gcode_line)), 0, ($gcode_line.Length))
 	}
-	$ostream.Write(([byte[]][char[]]("M2 ; Completed job, reset state`r`n")), 0, ("M2 ; Completed job, reset state".Length+2))
+	$end_gcode = "M104 S0`r`n;Retract the filament`r`nG92 E1`r`nG1 E-1 F300`r`nG28 X0 Y0`r`nM84`r`nM2 ; Completed job, reset state`r`n"
+	$ostream.Write(([byte[]][char[]]($end_gcode)), 0, ($end_gcode.Length))
 
 	$ostream.close()
 	Write-Host $line_count
