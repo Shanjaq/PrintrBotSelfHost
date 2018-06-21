@@ -88,7 +88,7 @@ function Convert-GCode ($fileName)
 		$line_count++
 		$ostream.Write(([byte[]][char[]]($gcode_line)), 0, ($gcode_line.Length))
 	}
-	$end_gcode = "M104 S0`r`n;Retract the filament`r`nG92 E1`r`nG1 E-1 F300`r`nG28 X0 Y0`r`nM84`r`nM2 ; Completed job, reset state`r`n"
+	$end_gcode = ";Retract the filament`r`nG92 E1`r`nG1 E-1 F300`r`nG28 X0 Y0`r`nM84`r`nM2 ; Completed job, reset state`r`n"
 	$ostream.Write(([byte[]][char[]]($end_gcode)), 0, ($end_gcode.Length))
 
 	$ostream.close()
