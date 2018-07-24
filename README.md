@@ -14,6 +14,7 @@ Steps:
 -hostAddress "local_ip_address:8000" -printerAddress "printer_ip_address"
 4. Wait for processing to complete
 5. Execute:
+
     .\websrv.ps1
 6. Open a browser, paste the HTTP request printed to the console into the address bar and hit enter
 7. Wait for project file to transfer
