@@ -14,7 +14,7 @@ Steps:
 4. Wait for processing to complete
 5. Execute:
     .\websrv.ps1
-6. Open a browser, paste the HTTP request printed to the console into the address bar and hit enter:
+6. Open a browser, paste the HTTP request printed to the console into the address bar and hit enter
 7. Wait for project file to transfer
 8. Open project and download the full gcode using the printer LCD UI
 
