@@ -22,8 +22,6 @@ Steps:
 
 Notes:
 
-*PROJECT_ID will display in the console when import_gcode.ps1 processing completes
-
 ***Be sure to download the full gcode to your printer before your host computer IP changes (in the case of DHCP) because the IP is stored in the project file itself.**
 
 *The bundled Web Server script listens on port 8000, be sure to run this elevated before starting it for the first time:
