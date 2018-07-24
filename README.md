@@ -9,6 +9,7 @@ Steps:
 1. Start a PowerShell prompt
 2. Copy your Cura-generated gcode file into the same folder as the import_gcode.ps1 script
 3. Execute:
+
     .\import_gcode.ps1 -projectName "some_project_name" -gcodeFileName "some_project_name.gcode"
 -hostAddress "local_ip_address:8000" -printerAddress "printer_ip_address"
 4. Wait for processing to complete
