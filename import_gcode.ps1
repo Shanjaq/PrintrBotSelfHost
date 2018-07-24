@@ -1,13 +1,18 @@
 Param
 (
+	[Parameter(Mandatory=$true)]
 	[string]$projectName, #some_project_name
+	[Parameter(Mandatory=$true)]
 	[string]$gcodeFileName, #some_gcode_file.gcode
-	[string]$hostAddress #http://some_address:8000
+	[Parameter(Mandatory=$true)]
+	[string]$hostAddress, #some_address:8000
+	[string]$printerAddress = "" #some_printer_address
 )
 
 $file_part_a = "project_part_a"
 $file_part_b = "project_part_b"
 $file_part_c = "project_part_c"
+
 
 function New-RandomString ($count) {
 	$c = $null
@@ -39,7 +44,7 @@ function Build-Project ($prjName, $fileName, $hostAddr)
 	}
 	$ostream.Write($bytes, 0, $file_part_a_size)
 
-	#char[8]+0x00+"20"+"fileName+pad[32]+hostAddr+generated_gcode_file_name+pad[256]"
+	#char[8]+0x00+"20"+"fileName+pad[32]+http://hostAddr+generated_gcode_file_name+pad[256]"
 	$file_part_b_size = 299
 	$bytes = New-Object byte[] $file_part_b_size
 	$job_name = New-RandomString -count 8
@@ -54,7 +59,7 @@ function Build-Project ($prjName, $fileName, $hostAddr)
 	{
 		$bytes[11+$i] = $gcoFileName[$i]
 	}
-	$gcode_file_address = "$($hostAddr)/gcode/$($fileName).gco"
+	$gcode_file_address = "http://$($hostAddr)/gcode/$($fileName).gco"
 	for ($i = 0; $i -le $gcode_file_address.Length; $i++)
 	{
 		$bytes[43+$i] = $gcode_file_address[$i]
@@ -66,7 +71,10 @@ function Build-Project ($prjName, $fileName, $hostAddr)
 	$ostream.Write($bytes, 0, $file_part_c_size)
 
 	$ostream.close()
+
+	$projectId.ToUpper()
 }
+
 
 function Convert-GCode ($fileName)
 {
@@ -92,7 +100,6 @@ function Convert-GCode ($fileName)
 	$ostream.Write(([byte[]][char[]]($end_gcode)), 0, ($end_gcode.Length))
 
 	$ostream.close()
-	Write-Host $line_count
 	$header = Get-Content -Raw -Path gcode_header_template.json | ConvertFrom-Json
 	$header.lines = $line_count
 	@(";$($header | ConvertTo-Json)" -replace "`r|`n|\s+", "") +  (Get-Content "http\gcode\$($some_id.ToLower()).tmp") | Set-Content "http\gcode\$($some_id.ToLower()).gco"
@@ -100,6 +107,23 @@ function Convert-GCode ($fileName)
 	$some_id
 }
 
-$gcode_file_id = Convert-GCode -fileName $gcodeFileName
 
-Build-Project -prjName $projectName -fileName $gcode_file_id -hostAddr $hostAddress
+$gcode_file_id = Convert-GCode -fileName $gcodeFileName
+$project_file_name = Build-Project -prjName $projectName -fileName $gcode_file_id -hostAddr $hostAddress
+
+
+$restoreColor = [console]::ForegroundColor
+if ($printerAddress -ne "")
+{
+	Write-Host "send this request to download the project onto the printer:"
+	[console]::ForegroundColor = "Green"
+	Write-Host "http://$($printerAddress)/fetch?id=$($project_file_name)&url=http://$($hostAddress)/projects/$($project_file_name)&type=project"
+}
+else
+{
+	[console]::ForegroundColor = "Yellow"
+	Write-Host "printer_ip_address must be filled in before sending this request to download the project onto the printer:"
+	[console]::ForegroundColor = "Green"
+	Write-Host "http://printer_ip_address/fetch?id=$($project_file_name)&url=http://$($hostAddress)/projects/$($project_file_name)&type=project"
+}
+[console]::ForegroundColor = $restoreColor

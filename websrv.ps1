@@ -11,7 +11,7 @@ While ($Hso.IsListening) {
     $HReq = $HC.Request
     $HRes = $HC.Response
 	
-    $localPath = Join-Path (Join-Path "MyPowerShellSite:" "http") ($HC.Request).RawUrl
+    $localPath = Join-Path (Join-Path "MyPowerShellSite:" "http") $HReq.RawUrl
     $fs = New-Object System.IO.FileStream((Get-Item $localPath), [System.IO.FileMode]::Open)
     $HRes.ContentType = [System.Web.MimeMapping]::GetMimeMapping($localPath)
 
