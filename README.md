@@ -19,6 +19,7 @@ Steps:
 8. Open project and download the full gcode using the printer LCD UI
 
 Notes:
+
 *PROJECT_ID will display in the console when import_gcode.ps1 processing completes
 
 ***Be sure to download the full gcode to your printer before your host computer IP changes (in the case of DHCP) because the IP is stored in the project file itself.**
