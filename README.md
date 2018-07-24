@@ -5,7 +5,7 @@ currently using the project_part_* file fragments until the binary format is dis
 
 Steps:
 
-0. Backup your SD Card (any mistake in the steps to follow will corrupt the index!)
+**0. Backup your SD Card (any mistake in the steps to follow will corrupt the index!)**
 1. Start a PowerShell prompt
 2. Copy your Cura-generated gcode file into the same folder as the import_gcode.ps1 script
 3. Execute:
